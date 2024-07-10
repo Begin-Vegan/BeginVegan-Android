@@ -7,4 +7,6 @@ interface HomeNavigationHandler {
     fun navigateToMap()
     fun navigateToTips(fromTest: Boolean)
     fun navigateToMypage()
+
+    fun getNavController():NavController
 }

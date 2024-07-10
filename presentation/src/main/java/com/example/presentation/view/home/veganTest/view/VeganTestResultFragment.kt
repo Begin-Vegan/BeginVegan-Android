@@ -4,6 +4,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.example.presentation.R
 import com.example.presentation.base.BaseFragment
+import com.example.presentation.config.navigation.MainNavController
 import com.example.presentation.config.navigation.main.MainNavigationHandler
 import com.example.presentation.databinding.FragmentVeganTestResultBinding
 import com.example.presentation.view.home.veganTest.viewModel.VeganTestViewModel
@@ -14,6 +15,7 @@ import javax.inject.Inject
 class VeganTestResultFragment : BaseFragment<FragmentVeganTestResultBinding>(R.layout.fragment_vegan_test_result) {
 
     @Inject
+    @MainNavController
     lateinit var mainNavigationHandler: MainNavigationHandler
     private val viewModel: VeganTestViewModel by activityViewModels()
 

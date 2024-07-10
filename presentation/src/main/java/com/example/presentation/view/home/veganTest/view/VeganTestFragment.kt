@@ -7,6 +7,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import com.example.presentation.R
 import com.example.presentation.base.BaseFragment
+import com.example.presentation.config.navigation.MainNavController
 import com.example.presentation.config.navigation.main.MainNavigationHandler
 import com.example.presentation.databinding.FragmentVeganTestBinding
 import com.example.presentation.databinding.IncludeIllusVeganLevelBinding
@@ -24,6 +25,7 @@ class VeganTestFragment : BaseFragment<FragmentVeganTestBinding>(R.layout.fragme
     private var latestIncludedView: IncludeIllusVeganLevelBinding? =null
 
     @Inject
+    @MainNavController
     lateinit var mainNavigationHandler: MainNavigationHandler
     private val viewModel: VeganTestViewModel by activityViewModels()
 

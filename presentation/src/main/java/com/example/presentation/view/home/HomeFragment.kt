@@ -10,6 +10,7 @@ import com.example.domain.model.NearRestaurant
 import com.example.presentation.R
 import com.example.presentation.adapter.home.HomeRestaurantRVAdapter
 import com.example.presentation.base.BaseFragment
+import com.example.presentation.config.navigation.MainNavController
 import com.example.presentation.config.navigation.home.HomeNavigationHandler
 import com.example.presentation.config.navigation.main.MainNavigationHandler
 import com.example.presentation.databinding.FragmentMainHomeBinding
@@ -30,6 +31,7 @@ class HomeFragment: BaseFragment<FragmentMainHomeBinding>(R.layout.fragment_main
     lateinit var drawerController: DrawerController
 
     @Inject
+    @MainNavController
     lateinit var mainNavigationHandler: MainNavigationHandler
 
     private lateinit var tipsNavigationHandler: TipsNavigationHandler

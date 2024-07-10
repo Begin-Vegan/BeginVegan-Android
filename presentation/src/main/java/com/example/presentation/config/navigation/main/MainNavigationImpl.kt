@@ -4,11 +4,14 @@ import androidx.navigation.NavArgument
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import com.example.presentation.R
+import com.example.presentation.config.navigation.MainNavController
 import com.example.presentation.view.home.veganTest.view.VeganTestResultFragmentDirections
 import timber.log.Timber
 import javax.inject.Inject
 
-class MainNavigationImpl @Inject constructor(private val navController: NavController) : MainNavigationHandler {
+class MainNavigationImpl @Inject constructor(
+    @MainNavController private val navController: NavController
+) : MainNavigationHandler {
 
     override fun navigateToEditProfile() {
         navController.navigate(R.id.action_mainFragment_to_mypageEditProfileFragment)

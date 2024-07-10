@@ -8,6 +8,7 @@ import com.example.data.model.tips.MagazineResponse
 import com.example.domain.model.tips.TipsMagazineItem
 import com.example.presentation.R
 import com.example.presentation.base.BaseFragment
+import com.example.presentation.config.navigation.MainNavController
 import com.example.presentation.config.navigation.main.MainNavigationHandler
 import com.example.presentation.databinding.FragmentTipsMagazineBinding
 import com.example.presentation.view.tips.adapter.TipsMagazineRvAdapter
@@ -18,6 +19,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class TipsMagazineFragment : BaseFragment<FragmentTipsMagazineBinding>(R.layout.fragment_tips_magazine) {
     @Inject
+    @MainNavController
     lateinit var mainNavigationHandler: MainNavigationHandler
 
     private val magazineViewModel : MagazineViewModel by activityViewModels()
