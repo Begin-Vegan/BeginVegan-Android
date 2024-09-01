@@ -104,8 +104,6 @@ class HomeFragment : BaseFragment<FragmentMainHomeBinding>(R.layout.fragment_mai
 
         setUserInfo()
 
-        setRestaurantRecyclerView()
-
         setTipsTab()
 
         setOpenDrawer()
@@ -230,13 +228,7 @@ class HomeFragment : BaseFragment<FragmentMainHomeBinding>(R.layout.fragment_mai
             .commit()
     }
 
-    private fun setRestaurantRecyclerView() {
-        homeRestaurantRVAdapter = HomeRestaurantRVAdapter(requireContext())
-        binding.rvRestaurantList.adapter = homeRestaurantRVAdapter
-        homeRestaurantRVAdapter.submitList(list.toMutableList())
-        binding.rvRestaurantList.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-    }
+
 
     private fun checkAndRequestPermissions() {
         when {
