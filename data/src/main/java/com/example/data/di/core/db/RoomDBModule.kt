@@ -1,18 +1,16 @@
 package com.example.data.di.core.db
 
 import android.content.Context
-import androidx.room.Room
 import com.example.data.mapper.map.HistorySearchMapper
+import com.example.data.repository.local.device.FirstRunDataSource
+import com.example.data.repository.local.device.FirstRunDataSourceImpl
 import com.example.data.repository.local.search.HistorySearchLocalDataSource
 import com.example.data.repository.local.search.HistorySearchLocalDataSourceImpl
 import com.example.data.repository.local.search.HistorySearchRepositoryImpl
-import com.example.data.repository.remote.userInfo.HomeUserInfoDataSource
-import com.example.data.repository.remote.userInfo.HomeUserInfoDataSourceImpl
-import com.example.data.repository.remote.userInfo.HomeUserInfoRepositoryImpl
+import com.example.data.room.FirstRunDao
 import com.example.data.room.HistorySearchDao
-import com.example.data.room.HistorySearchDatabase
+import com.example.data.room.RoomDatabaseManager
 import com.example.domain.repository.map.HistorySearchRepository
-import com.example.domain.repository.userInfo.HomeUserInfoRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -28,11 +26,11 @@ object RoomDBModule {
     @Provides
     fun provideHistorySearchDatabase(
         @ApplicationContext context: Context
-    ): HistorySearchDatabase = HistorySearchDatabase.getInstance(context)
+    ): RoomDatabaseManager = RoomDatabaseManager.getInstance(context)
 
     @Provides
     @Singleton
-    fun provideHistorySearchDao(database: HistorySearchDatabase): HistorySearchDao = database.historySearchDao()
+    fun provideHistorySearchDao(database: RoomDatabaseManager): HistorySearchDao = database.historySearchDao()
 
     @Provides
     @Singleton
@@ -56,4 +54,17 @@ object RoomDBModule {
     fun provideHistorySearchMapper(): HistorySearchMapper {
         return HistorySearchMapper()
     }
+
+    @Provides
+    @Singleton
+    fun provideFirstRunDao(database: RoomDatabaseManager): FirstRunDao = database.firstRunDao()
+
+    @Provides
+    @Singleton
+    fun provideFirstRunDataSource(
+        firstRunDao: FirstRunDao
+    ): FirstRunDataSource {
+        return FirstRunDataSourceImpl(firstRunDao)
+    }
+
 }

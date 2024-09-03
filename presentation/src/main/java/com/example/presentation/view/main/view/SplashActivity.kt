@@ -1,4 +1,4 @@
-package com.example.presentation.view.main
+package com.example.presentation.view.main.view
 
 import android.content.Intent
 import android.os.Build
@@ -8,15 +8,18 @@ import android.os.Looper
 import android.view.View
 import android.view.WindowInsets
 import android.view.WindowInsetsController
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil
 import com.example.presentation.R
 import com.example.presentation.databinding.ActivitySplashBinding
 import com.example.presentation.view.login.view.LoginActivity
+import com.example.presentation.view.main.viewModel.SplashViewModel
 
 class SplashActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySplashBinding
+    private val viewModel: SplashViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = DataBindingUtil.setContentView(this, R.layout.activity_splash)

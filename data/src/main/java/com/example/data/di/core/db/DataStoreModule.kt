@@ -28,16 +28,6 @@ object DataStoreModule {
         }
     }
 
-//    @Provides
-//    @Singleton
-//    fun provideAuthPrefsDataStore(
-//        @ApplicationContext context: Context
-//    ): DataStore<Preferences> {
-//        return PreferenceDataStoreFactory.create {
-//            context.preferencesDataStoreFile("auth_prefs")
-//        }
-//    }
-
     @Provides
     @Singleton
     fun provideAuthTokenDataSource(

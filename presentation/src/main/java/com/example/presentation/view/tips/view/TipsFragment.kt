@@ -2,17 +2,15 @@ package com.example.presentation.view.tips.view
 
 import androidx.fragment.app.activityViewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
-import androidx.navigation.navGraphViewModels
 import com.example.presentation.R
 import com.example.presentation.base.BaseFragment
 import com.example.presentation.databinding.FragmentMainTipsBinding
 import com.example.presentation.util.DrawerController
-import com.example.presentation.view.main.MainViewModel
+import com.example.presentation.view.main.viewModel.MainViewModel
 import com.example.presentation.view.tips.adapter.TipsVpAdapter
 import com.example.presentation.view.tips.viewModel.RecipeViewModel
 import com.google.android.material.tabs.TabLayoutMediator
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint

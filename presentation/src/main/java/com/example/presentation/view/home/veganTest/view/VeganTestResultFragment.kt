@@ -4,15 +4,13 @@ import androidx.fragment.app.activityViewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import com.example.presentation.R
 import com.example.presentation.base.BaseFragment
 import com.example.presentation.config.navigation.MainNavigationHandler
 import com.example.presentation.databinding.FragmentVeganTestResultBinding
 import com.example.presentation.view.home.veganTest.viewModel.VeganTestViewModel
-import com.example.presentation.view.main.MainViewModel
+import com.example.presentation.view.main.viewModel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint

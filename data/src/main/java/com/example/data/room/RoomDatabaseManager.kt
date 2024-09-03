@@ -5,29 +5,31 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import android.content.Context
+import com.example.data.model.device.FirstRunEntity
 import com.example.data.model.map.HistorySearchEntity
 
 @Database(
-    entities = [HistorySearchEntity::class],
+    entities = [HistorySearchEntity::class, FirstRunEntity::class], // 모든 엔티티를 포함합니다.
     version = 2,
     exportSchema = false
 )
 @TypeConverters(OrmConverter::class)
-abstract class HistorySearchDatabase : RoomDatabase() {
+abstract class RoomDatabaseManager : RoomDatabase() {
     abstract fun historySearchDao(): HistorySearchDao
+    abstract fun firstRunDao(): FirstRunDao
 
     companion object {
         @Volatile
-        private var INSTANCE: HistorySearchDatabase? = null
+        private var INSTANCE: RoomDatabaseManager? = null
 
-        fun getInstance(context: Context): HistorySearchDatabase {
+        fun getInstance(context: Context): RoomDatabaseManager {
             return INSTANCE ?: synchronized(this) {
                 val instance = Room.databaseBuilder(
                     context.applicationContext,
-                    HistorySearchDatabase::class.java,
-                    "beginvegan-search-history.db"
+                    RoomDatabaseManager::class.java,
+                    "beginvegan-database.db"
                 )
-                    .fallbackToDestructiveMigration() // Optional: handle migrations more gracefully
+                    .fallbackToDestructiveMigration()
                     .build()
                 INSTANCE = instance
                 instance

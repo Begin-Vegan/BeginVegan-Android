@@ -1,6 +1,5 @@
 package com.example.presentation.view.login.view
 
-import android.Manifest
 import android.content.Intent
 import android.os.Build
 import androidx.activity.result.ActivityResultLauncher
@@ -16,7 +15,7 @@ import com.example.presentation.view.image.gallery.model.GalleryImage
 import com.example.presentation.view.image.gallery.view.GalleryActivity
 import com.example.presentation.view.image.gallery.view.PhotoSelectDialog
 import com.example.presentation.view.login.viewModel.OnboardingViewModel
-import com.example.presentation.view.main.MainActivity
+import com.example.presentation.view.main.view.MainActivity
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint

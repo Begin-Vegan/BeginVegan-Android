@@ -18,7 +18,7 @@ import com.example.presentation.config.navigation.MainNavigationHandler
 import com.example.presentation.databinding.FragmentMypageMyRecipeBinding
 import com.example.presentation.network.NetworkResult
 import com.example.presentation.util.BookmarkController
-import com.example.presentation.view.main.MainViewModel
+import com.example.presentation.view.main.viewModel.MainViewModel
 import com.example.presentation.view.mypage.adapter.MyRecipeRvAdapter
 import com.example.presentation.view.mypage.viewModel.MyRecipeViewModel
 import com.example.presentation.view.tips.view.TipsRecipeDetailDialog
@@ -27,7 +27,6 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @AndroidEntryPoint

@@ -9,7 +9,6 @@ import androidx.fragment.app.activityViewModels
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
-import androidx.navigation.navGraphViewModels
 import com.bumptech.glide.Glide
 import com.example.domain.model.tips.MagazineContent
 import com.example.domain.model.tips.TipsMagazineDetail
@@ -18,13 +17,11 @@ import com.example.presentation.base.BaseFragment
 import com.example.presentation.config.navigation.MainNavigationHandler
 import com.example.presentation.databinding.FragmentTipsMagazineDetailBinding
 import com.example.presentation.util.BookmarkController
-import com.example.presentation.view.main.MainViewModel
+import com.example.presentation.view.main.viewModel.MainViewModel
 import com.example.presentation.view.tips.viewModel.MagazineViewModel
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject

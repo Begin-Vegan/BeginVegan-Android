@@ -18,7 +18,7 @@ import com.example.presentation.config.navigation.MainNavigationHandler
 import com.example.presentation.databinding.FragmentMypageMyMagazineBinding
 import com.example.presentation.network.NetworkResult
 import com.example.presentation.util.BookmarkController
-import com.example.presentation.view.main.MainViewModel
+import com.example.presentation.view.main.viewModel.MainViewModel
 import com.example.presentation.view.mypage.adapter.MyMagazineRvAdapter
 import com.example.presentation.view.mypage.viewModel.MyMagazineViewModel
 import com.example.presentation.view.tips.viewModel.MagazineViewModel
@@ -37,7 +37,7 @@ class MypageMyMagazineFragment : BaseFragment<FragmentMypageMyMagazineBinding>(R
 
     private val magazineViewModel:MagazineViewModel by activityViewModels()
     private val myMagazineViewModel: MyMagazineViewModel by viewModels()
-    private val mainViewModel:MainViewModel by navGraphViewModels(R.id.nav_main_graph)
+    private val mainViewModel: MainViewModel by navGraphViewModels(R.id.nav_main_graph)
 
     private lateinit var myMagazineRvAdapter: MyMagazineRvAdapter
     private var myMagazineList = mutableListOf<MypageMyMagazineItem>()

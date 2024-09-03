@@ -1,4 +1,4 @@
-package com.example.presentation.view.main
+package com.example.presentation.view.main.view
 
 import android.view.View
 import androidx.activity.OnBackPressedCallback
