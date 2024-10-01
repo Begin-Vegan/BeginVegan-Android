@@ -60,15 +60,12 @@ object UserInfoModule {
     fun provideHomeUserInfoRepository(
         homeUserInfoDataSource: HomeUserInfoDataSource,
         userInfoMapper: HomeUserInfoMapper
-    ): HomeUserInfoRepository{
-        return HomeUserInfoRepositoryImpl(homeUserInfoDataSource,userInfoMapper)
+    ): HomeUserInfoRepository {
+        return HomeUserInfoRepositoryImpl(homeUserInfoDataSource, userInfoMapper)
     }
+
     @Provides
-    fun provideBaseMapper(): BaseMapper {
-        return BaseMapper()
-    }
-    @Provides
-    fun provideHomeUserInfoMapper(): HomeUserInfoMapper{
+    fun provideHomeUserInfoMapper(): HomeUserInfoMapper {
         return HomeUserInfoMapper()
     }
 }

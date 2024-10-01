@@ -5,11 +5,10 @@ import com.example.data.di.core.network.NetworkModule
 import com.example.data.mapper.map.RecommendRestaurantMapper
 import com.example.data.mapper.map.RestaurantDetailMapper
 import com.example.data.mapper.map.VeganMapMapper
-import com.example.data.mapper.tips.TipsRecipeDetailMapper
 import com.example.data.repository.local.auth.AuthTokenDataSource
 import com.example.data.repository.remote.map.VeganMapRemoteDataSource
 import com.example.data.repository.remote.map.VeganMapRemoteDataSourceImpl
-import com.example.data.repository.remote.map.VeganMapRepositoryImpl
+import com.example.data.repository.remote.map.VeganMapRemoteRepositoryImpl
 import com.example.data.retrofit.map.VeganMapService
 import com.example.domain.repository.map.VeganMapRepository
 import dagger.Module
@@ -46,7 +45,7 @@ class VeganMapModule {
         restaurantDetailMapper: RestaurantDetailMapper,
         recommendRestaurantMapper: RecommendRestaurantMapper
     ): VeganMapRepository {
-        return VeganMapRepositoryImpl(
+        return VeganMapRemoteRepositoryImpl(
             veganMapRemoteDataSource,
             veganMapMapper,
             restaurantDetailMapper,

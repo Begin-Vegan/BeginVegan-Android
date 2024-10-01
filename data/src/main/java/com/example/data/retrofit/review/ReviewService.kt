@@ -26,10 +26,10 @@ interface ReviewService {
     // 식당 리뷰 조회
     @GET("/api/v1/restaurants/{restaurantId}/review")
     suspend fun getRestaurantReview(
-        @Path("reviewId") reviewId: Int,
+        @Path("reviewId") reviewId: Long,
         @Query("page") page: Int,
         @Query("isPhoto") isPhoto: Boolean,
-        @Query("String") filter: String
+        @Query("filter") filter: String
     ): ApiResponse<RestaurantReviewResponse>
 
     // 리뷰 작성
@@ -47,7 +47,7 @@ interface ReviewService {
     @POST("/api/v1/reviews/{reviewId}/report")
     suspend fun postReportReview(
         @Header("Authorization") token: String,
-        @Path("reviewId") reviewId: Int,
+        @Path("reviewId") reviewId: Long,
         @Body content: String
     ): ApiResponse<BaseResponse>
 
@@ -55,6 +55,6 @@ interface ReviewService {
     @DELETE("/api/v1/reviews/{reviewId}")
     suspend fun deleteReview(
         @Header("Authorization") token: String,
-        @Path("reviewId") reviewId: Int,
+        @Path("reviewId") reviewId: Long,
     ): ApiResponse<BaseResponse>
 }

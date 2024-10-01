@@ -1,6 +1,7 @@
 package com.example.data.di.core.network
 
 import com.example.data.BuildConfig
+import com.example.data.mapper.core.BaseMapper
 import com.skydoves.sandwich.retrofit.adapters.ApiResponseCallAdapterFactory
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
@@ -49,5 +50,12 @@ object NetworkModule {
             .baseUrl(BuildConfig.BASE_URL)
             .build()
     }
+
+    @Singleton
+    @Provides
+    fun provideBaseMapper(): BaseMapper {
+        return BaseMapper()
+    }
+
 
 }

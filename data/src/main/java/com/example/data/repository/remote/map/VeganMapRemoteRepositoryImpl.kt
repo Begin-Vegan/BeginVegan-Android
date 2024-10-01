@@ -9,14 +9,12 @@ import com.example.domain.model.map.VeganMapRestaurant
 import com.example.domain.repository.map.VeganMapRepository
 import com.skydoves.sandwich.ApiResponse
 import com.skydoves.sandwich.retrofit.errorBody
-import com.skydoves.sandwich.suspendOnError
-import com.skydoves.sandwich.suspendOnSuccess
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import timber.log.Timber
 import javax.inject.Inject
 
-class VeganMapRepositoryImpl @Inject constructor(
+class VeganMapRemoteRepositoryImpl @Inject constructor(
     private val veganMapRemoteDataSource: VeganMapRemoteDataSource,
     private val veganMapMapper: VeganMapMapper,
     private val restaurantDetailMapper: RestaurantDetailMapper,
