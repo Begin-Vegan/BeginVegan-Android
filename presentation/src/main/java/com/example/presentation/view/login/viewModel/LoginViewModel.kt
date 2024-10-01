@@ -1,12 +1,13 @@
 package com.example.presentation.view.login.viewModel
 
-import android.annotation.SuppressLint
 import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.useCase.auth.SignInUseCase
+import com.example.domain.useCase.device.IsFirstRunUseCase
+import com.example.domain.useCase.device.UpdateFirstRunRecordUseCase
 import com.kakao.sdk.auth.model.OAuthToken
 import com.kakao.sdk.common.model.ClientError
 import com.kakao.sdk.common.model.ClientErrorCause
@@ -18,7 +19,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val signInUseCase: SignInUseCase
+    private val signInUseCase: SignInUseCase,
+    private val isFirstRunUseCase: IsFirstRunUseCase,
+    private val saveFirstRunRecordUseCase: UpdateFirstRunRecordUseCase
 ) : ViewModel() {
 
     private val mCallback: (OAuthToken?, Throwable?) -> Unit = { token, error ->
@@ -30,6 +33,8 @@ class LoginViewModel @Inject constructor(
 
         }
     }
+
+    val isFirstRun = MutableLiveData<Boolean>()
 
     private val _loginState = MutableLiveData(false)
     val loginState: LiveData<Boolean> = _loginState
@@ -89,4 +94,18 @@ class LoginViewModel @Inject constructor(
             }
         }
     }
+
+    fun checkFirstRun() {
+        viewModelScope.launch {
+            val firstRun = isFirstRunUseCase()
+            isFirstRun.postValue(firstRun)
+        }
+    }
+
+    fun fetchFirstRunRecord() {
+        viewModelScope.launch {
+            saveFirstRunRecordUseCase()
+        }
+    }
+
 }

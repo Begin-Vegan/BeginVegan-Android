@@ -5,8 +5,22 @@ import javax.inject.Inject
 
 class GetNearRestaurantUseCase @Inject constructor(
     private val veganMapRepository: VeganMapRepository
-){
-    suspend fun getNearRestaurantWithPermission() = veganMapRepository.getNearRestaurantWithPermission()
+) {
+    suspend fun getNearRestaurantWithPermission(
+        count: Long,
+        latitude: String,
+        longitude: String
+    ) =
+        veganMapRepository.getNearRestaurantWithPermission(
+            count,
+            latitude,
+            longitude
+        )
 
-    suspend fun getNearRestaurantWithOutPermission() = veganMapRepository.getNearRestaurantWithOutPermission()
+    suspend fun getNearRestaurantWithOutPermission(
+        count: Long
+    ) =
+        veganMapRepository.getNearRestaurantWithOutPermission(
+            count
+        )
 }

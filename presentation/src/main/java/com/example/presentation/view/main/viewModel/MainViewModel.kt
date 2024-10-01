@@ -4,22 +4,31 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.domain.model.map.RecommendRestaurant
+import com.example.domain.useCase.map.restaurant.GetNearRestaurantUseCase
 import com.example.domain.useCase.userInfo.HomeUserInfoUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
-    private val homeUserInfoUseCase: HomeUserInfoUseCase
+    private val homeUserInfoUseCase: HomeUserInfoUseCase,
+    private val getNearRestaurantUseCase: GetNearRestaurantUseCase
 ) : ViewModel() {
 
-    private val _nickName = MutableStateFlow<String>("")
+    private val _nickName = MutableStateFlow("")
     val nickName: StateFlow<String> get() = _nickName.asStateFlow()
+
+    private val _userLevel = MutableStateFlow("")
+    val userLevel: StateFlow<String> get() = _userLevel.asStateFlow()
 
     private val _tipsMoveToRecipe = MutableLiveData(false)
     val tipsMoveToRecipe: LiveData<Boolean> = _tipsMoveToRecipe
@@ -35,7 +44,7 @@ class MainViewModel @Inject constructor(
 
     private val _fromMyMagazine = MutableLiveData(false)
     val fromMyMagazine: LiveData<Boolean> = _fromMyMagazine
-    fun setFromMyMagazine(isMove:Boolean){
+    fun setFromMyMagazine(isMove: Boolean) {
         _fromMyMagazine.value = isMove
     }
 
@@ -44,20 +53,38 @@ class MainViewModel @Inject constructor(
     fun setMapMoveToReview(isMove: Boolean) {
         _mapMoveToReview.value = isMove
     }
-    fun getUserData(){
-        viewModelScope.launch {
 
-        }
-    }
+    private val _recommendRestaurantList = MutableStateFlow<List<RecommendRestaurant>>(emptyList())
+    val recommendRestaurantList: StateFlow<List<RecommendRestaurant>> get() = _recommendRestaurantList.asStateFlow()
+
+
     fun getUserInfo() {
         viewModelScope.launch(Dispatchers.IO) {
-            homeUserInfoUseCase.invoke().onSuccess {
-
-            }.onFailure {
-
-            }
+            homeUserInfoUseCase.invoke()
+                .flowOn(Dispatchers.IO)
+                .catch { e ->
+                    Timber.d(e, "getUserInfo Exception")
+                }
+                .collect { userInfo ->
+                    Timber.d("getUserInfo $userInfo")
+                    _nickName.value = userInfo.nickName
+                    _userLevel.value = userInfo.userLevel
+                }
         }
+    }
 
+    fun getRecommendRestaurant() {
+        viewModelScope.launch(Dispatchers.IO) {
+            getNearRestaurantUseCase.getNearRestaurantWithOutPermission(3)
+                .flowOn(Dispatchers.IO)
+                .catch { e ->
+                    Timber.d(e, "getRecommendRestaurant Exception")
+                }
+                .collect { recommendList ->
+                    Timber.d("getRecommendRestaurant list $recommendList")
+                    _recommendRestaurantList.value = recommendList
+                }
+        }
     }
 
 }

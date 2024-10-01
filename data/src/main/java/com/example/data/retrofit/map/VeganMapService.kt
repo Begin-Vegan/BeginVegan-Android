@@ -1,8 +1,10 @@
 package com.example.data.retrofit.map
 
 import com.example.data.model.map.NearRestaurantResponse
+import com.example.data.model.map.RecommendRestaurantResponse
 import com.example.data.model.map.RestaurantDetailResponse
 import com.example.data.model.map.VeganMapRestaurantResponse
+import com.example.domain.model.map.RecommendRestaurant
 import com.example.domain.model.map.VeganMapRestaurant
 import com.skydoves.sandwich.ApiResponse
 import retrofit2.http.GET
@@ -16,17 +18,17 @@ interface VeganMapService {
     @GET("/api/v1/restaurants/random/{count}")
     suspend fun getNearRestaurantWithOutPermission(
         @Header("Authorization") token: String,
-        @Path("count") count: Int
-    ): ApiResponse<NearRestaurantResponse>
+        @Path("count") count: Long
+    ): ApiResponse<RecommendRestaurantResponse>
 
     // 홈 화면 - 위치 권한 o, 10km 이내 랜덤 식당 3개 조희
     @GET("/api/v1/restaurants/random/permission/{count}")
     suspend fun getNearRestaurantWithPermission(
         @Header("Authorization") token: String,
-        @Path("count") count: Int,
+        @Path("count") count: Long,
         @Query("latitude") latitude: String,
         @Query("longitude") longitude: String
-    ): ApiResponse<NearRestaurantResponse>
+    ): ApiResponse<RecommendRestaurantResponse>
 
     //    // Map 1depth - 식당 리스트 조회 : 가까운 순
     @GET("/api/v1/restaurants/around")

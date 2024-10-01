@@ -16,11 +16,13 @@
     <color name="color_gray_95">#FF959595</color>
     <color name="color_transparent">#00000000</color>
     <color name="color_dim_50">#88000000</color>
-
     <!-- Version.02 -->
     <color name="color_primary">#FF009861</color>
     <color name="color_primary_variant_01">#FF005536</color>
     <color name="color_primary_variant_02">#FFE4F1EB</color>
+
+    <color name="colorUserName1">#FFFDD23B</color>
+    <color name="colorUserName2">#FF009861</color>
 
     <color name="color_secondary">#FFFDD23B</color>
     <color name="color_secondary_variant_01">#FFFEA90B</color>

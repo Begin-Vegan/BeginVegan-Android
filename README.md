@@ -61,14 +61,14 @@
 ### ⚒️ Tech Stack
 | | Tech Stack  |
 | --- | --- |
-| 아키텍처 | MVP |
-| 소셜로그인 | KakaoLogin |
-| 데이터 연동 | ViewBinding |
-| 사진 | Glide |
-| 서버 연결 | Retrofit2 & OkHttp3   |
-| 메시지 | SnackBar / Dialog Custom |
-| Binding | BindingActivity & BindingFragment |
-| 지도 | KaKao Map API |
+| 아키텍처 | MVP | 
+| 소셜로그인 | KakaoLogin | 
+| 데이터 연동 | ViewBinding | 
+| 사진 | Glide | 
+| 서버 연결 | Retrofit2 & OkHttp3   | 
+| 메시지 | SnackBar / Dialog Custom | 
+| Binding | BindingActivity & BindingFragment | 
+| 지도 | KaKao Map API | 
 
 
 ### 📸 ScreenShot

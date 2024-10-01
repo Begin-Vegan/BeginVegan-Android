@@ -80,6 +80,7 @@ dependencies {
     // Moshi
     implementation(Dependencies.MOSHI)
     implementation("org.chromium.net:cronet-embedded:119.6045.31")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
     kapt(Dependencies.MOSHI_KAPT)
 
     // Okhttp

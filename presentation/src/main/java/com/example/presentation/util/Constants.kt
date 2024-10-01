@@ -39,4 +39,5 @@ object Constants {
     const val HOME_RECOMMEND_RESTAURANT_TO_VEGAN_MAP = "HOME_RECOMMEND_RESTAURANT_TO_VEGAN_MAP"
 
     // Profile Default Image Path
+
 }

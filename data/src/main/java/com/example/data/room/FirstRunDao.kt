@@ -10,8 +10,8 @@ import com.example.data.model.device.FirstRunEntity
 @Dao
 interface FirstRunDao {
 
-    @Query("SELECT * FROM first_run WHERE id = :id")
-    suspend fun getFirstRun(id: Int = 1): FirstRunEntity?
+    @Query("SELECT isFirstRun = 1 FROM first_run WHERE id = 1 LIMIT 1")
+    suspend fun isFirstRun(): Boolean
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFirstRun(firstRun: FirstRunEntity)

@@ -1,13 +1,14 @@
 package com.example.presentation.view.map.view
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationListener
-import android.location.LocationManager
 import android.os.Build
-import android.os.Bundle
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.DisplayMetrics
 import android.view.View
 import android.view.WindowInsets
@@ -28,14 +29,15 @@ import com.example.presentation.util.PermissionDialog
 import com.example.presentation.util.RestaurantReportDialog
 import com.example.presentation.view.map.adapter.VeganMapRestaurantRVAdapter
 import com.example.presentation.view.map.viewModel.VeganMapViewModel
-import com.example.presentation.view.mypage.view.MypageMyRestaurantFragmentDirections
-import com.example.presentation.view.restaurant.view.RestaurantDetailFragmentArgs
+import com.google.android.gms.location.*
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.kakao.vectormap.KakaoMap
 import com.kakao.vectormap.KakaoMapReadyCallback
 import com.kakao.vectormap.LatLng
 import com.kakao.vectormap.MapLifeCycleCallback
 import com.kakao.vectormap.MapView
+import com.kakao.vectormap.camera.CameraUpdate
+import com.kakao.vectormap.camera.CameraUpdateFactory
 import com.kakao.vectormap.label.LabelOptions
 import com.kakao.vectormap.label.LabelStyle
 import dagger.hilt.android.AndroidEntryPoint
@@ -52,62 +54,44 @@ class VeganMapFragment : BaseFragment<FragmentMainMapBinding>(R.layout.fragment_
 
     private val permissions = arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
 
-    private lateinit var locationListener: LocationListener
-    private lateinit var locationManager: LocationManager
+    private var currentLocation: LatLng? = null // 현재 위치를 저장할 변수
+    private var kakaoMap: KakaoMap? = null // KakaoMap 객체를 저장할 변수
 
-    private val locationPermissionLauncher =
-        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { isGranted ->
-            val isFineLocation = isGranted[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
-            val isCoarseLocation = isGranted[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+    private var isLocationUpdateRequested: Boolean = false
+    private val fusedLocationProviderClient: FusedLocationProviderClient by lazy {
+        LocationServices.getFusedLocationProviderClient(requireContext())
+    }
 
-            when {
-                isFineLocation && isCoarseLocation -> {
-                    // FineLoaction 승인 시, CoarseLoaction 자동 승인
-                    // 정확한 위치 권한 승인
-                    logMessage("locationPermissionLauncher Fine Location, Coarse Location Granted 정확한 위치 권한 승인")
-                    getLocation()
-                }
-
-                !isFineLocation && isCoarseLocation -> {
-                    // 대략적인 위치 권한 승인
-                    logMessage("locationPermissionLauncher Only Coarse Location Granted 대략적인 위치 권한 승인")
-                    getLocation()
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(
-                            requireActivity(),
-                            ACCESS_FINE_LOCATION
+    private val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            locationResult?.let { result ->
+                for (location in result.locations) {
+                    val latitude = location.latitude
+                    val longitude = location.longitude
+                    logMessage("Location Update: Latitude = $latitude, Longitude = $longitude")
+                    // 현재 위치 저장
+                    currentLocation = LatLng.from(latitude, longitude)
+                    // 지도 중심 이동
+                    kakaoMap?.moveCamera(
+                        CameraUpdateFactory.newCenterPosition(
+                            LatLng.from(
+                                currentLocation!!.latitude,
+                                currentLocation!!.longitude
+                            )
                         )
-                    ) {
-                        logMessage("locationPermissionLauncher Fine Location 거부 경험 있음")
-                        showPermissionDeniedDialog()
-                    } else {
-                        logMessage("locationPermissionLauncher Fine Location 거부 경험 없음")
-                        showFineLocationDialog()
-                    }
-
-                }
-
-                else -> {
-                    // 위치 권한 승인하지 않음
-                    logMessage("locationPermissionLauncher Permission Denied 위치 권한 거부")
-                    if (ActivityCompat.shouldShowRequestPermissionRationale(
-                            requireActivity(),
-                            ACCESS_COARSE_LOCATION
-                        )
-                    ) {
-                        logMessage("locationPermissionLauncher 위치 권한 거부 경험 없음")
-                        showPermissionRationaleDialog()
-                    } else {
-                        logMessage("locationPermissionLauncher 위치 권한 거부 경험 있음")
-                        showPermissionDeniedDialog()
-                    }
+                    )
+                    CameraUpdateFactory.zoomTo(15)
+                    // 주변 식당 정보 가져오기
+                    viewModel.fetchNearRestaurantMap(0, latitude, longitude)
+                    // 위치 업데이트 중지 (필요에 따라)
+                    removeLocationUpdates()
+                    break // 첫 번째 위치만 사용하고 루프 종료
                 }
             }
-
-
         }
+    }
 
     override fun init() {
-
         // 권한 체크
         checkAndRequestPermissions()
 
@@ -119,18 +103,42 @@ class VeganMapFragment : BaseFragment<FragmentMainMapBinding>(R.layout.fragment_
         // BottomSheet Recyclerview
         setRVAdapter()
 
-        //뒤로가기
+        // 뒤로가기
         setBackUp()
 
+        setUserInfo()
         // 제보하기 버튼
         reportRestaurant()
 
+        findCurrentLocation()
+
         setBottomSheet()
-
-
     }
 
-    // 40%대에서 floating 멈춤
+    private fun setUserInfo() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            viewModel.nickName.collect { userName ->
+                // 닉네임 바텀시트에 설정
+                val headlineText = getString(R.string.map_bottom_sheet_title_nearby, userName)
+                val headlineSpannable = SpannableString(headlineText)
+
+                val userNameColor1 =
+                    ContextCompat.getColor(requireContext(), R.color.color_primary)
+                val userNameStartIndex1 = headlineText.indexOf(userName)
+                val userNameEndIndex1 = userNameStartIndex1 + userName.length
+
+                headlineSpannable.setSpan(
+                    ForegroundColorSpan(userNameColor1),
+                    userNameStartIndex1,
+                    userNameEndIndex1,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+                binding.includedBottomSheet.tvBottomSheetTitle.text = headlineSpannable
+            }
+        }
+    }
+
+    // Floating Layer 설정
     private fun setFloatingLayer() {
         val height = getBottomSheetDialogDefaultHeight(60)
         val layoutParams = binding.clCollapse.layoutParams as CoordinatorLayout.LayoutParams
@@ -173,31 +181,6 @@ class VeganMapFragment : BaseFragment<FragmentMainMapBinding>(R.layout.fragment_
         })
     }
 
-    fun setBottomSheetState(behavior: BottomSheetBehavior<*>, targetState: Int) {
-        val bottomSheet = binding.includedBottomSheet.clBottomSheet
-        bottomSheet.post {
-            when (targetState) {
-                1 -> behavior.state = BottomSheetBehavior.STATE_COLLAPSED
-                2 -> {
-                    // 중간 상태 1로 설정 (비율 0.3)
-                    behavior.peekHeight = (bottomSheet.height * 0.3).toInt()
-                    behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
-                }
-
-                3 -> {
-                    // 중간 상태 2로 설정 (비율 0.7)
-                    behavior.peekHeight = (bottomSheet.height * 0.7).toInt()
-                    behavior.state = BottomSheetBehavior.STATE_HALF_EXPANDED
-                }
-
-                4 -> {
-                    behavior.peekHeight = (bottomSheet.height * 0.9).toInt()
-                    behavior.state = BottomSheetBehavior.STATE_EXPANDED
-                }
-            }
-        }
-    }
-
     private fun setRVAdapter() {
         veganMapRestaurantRVAdapter = VeganMapRestaurantRVAdapter()
         binding.includedBottomSheet.rvBottomSheetRestaurantList.adapter =
@@ -213,13 +196,18 @@ class VeganMapFragment : BaseFragment<FragmentMainMapBinding>(R.layout.fragment_
             override fun onClick(data: VeganMapRestaurant) {
                 logMessage("VeganMap onClick: $data")
                 showToast("${data.name}")
-                val action = VeganMapFragmentDirections.actionVeganMapFragmentToRestaurantDetailFragment(restaurantId = data.id, latitude = data.latitude, longitude = data.longitude, imgUrl = data.thumbnail)
+                val action =
+                    VeganMapFragmentDirections.actionVeganMapFragmentToRestaurantDetailFragment(
+                        restaurantId = data.id,
+                        latitude = data.latitude,
+                        longitude = data.longitude,
+                        imgUrl = data.thumbnail
+                    )
                 findNavController().navigate(action)
             }
 
         })
     }
-
 
     private fun reportRestaurant() {
         binding.fabMapReport.setOnClickListener {
@@ -230,6 +218,7 @@ class VeganMapFragment : BaseFragment<FragmentMainMapBinding>(R.layout.fragment_
     private fun findCurrentLocation() {
         binding.fabCurrentLocation.setOnClickListener {
             showToast("현재 위치 찾기")
+            getLocation()
         }
     }
 
@@ -245,20 +234,26 @@ class VeganMapFragment : BaseFragment<FragmentMainMapBinding>(R.layout.fragment_
                 // 인증 실패 및 지도 사용 중 에러가 발생할 때 호출됨
             }
         }, object : KakaoMapReadyCallback() {
-            override fun onMapReady(kakaoMap: KakaoMap) {
-                // 인증 후 API 가 정상적으로 실행될 때 호출됨
-                val layer = kakaoMap.labelManager?.layer
-                val centerLabel =
-                    layer?.addLabel(LabelOptions.from("centerLabel", position))?.setStyles(
-                        LabelStyle.from(R.drawable.ic_red_dot).setAnchorPoint(0.5f, 1.0f)
-                    )
-                val trackingManager = kakaoMap.trackingManager
-                trackingManager?.setTrackingRotation(true)
+            override fun onMapReady(map: KakaoMap) {
+                // KakaoMap 객체 저장
+                kakaoMap = map
 
+                // 현재 위치가 이미 확보되었다면 지도 중심 이동
+                currentLocation?.let { location ->
+                    kakaoMap?.moveCamera(
+                        CameraUpdateFactory.newCenterPosition(
+                            LatLng.from(
+                                location.latitude,
+                                location.longitude
+                            )
+                        )
+                    )
+                    CameraUpdateFactory.zoomTo(15)
+                }
             }
 
             override fun getPosition(): LatLng {
-                return super.getPosition()
+                return LatLng.from(37.5665, 126.9780)
             }
 
             // Default Zoom Level 15
@@ -268,53 +263,10 @@ class VeganMapFragment : BaseFragment<FragmentMainMapBinding>(R.layout.fragment_
         })
     }
 
-//    private fun getLocation() {
-//        logMessage("getLocation")
-//        locationManager = ContextCompat.getSystemService(
-//            requireContext(),
-//            LocationManager::class.java
-//        ) as LocationManager
-//
-//        val location: Location? = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
-//        logMessage("location = $location")
-//        location?.let {
-//            val latitude = it.latitude
-//            val longitude = it.longitude
-//            val accuracy = it.accuracy
-//            val time = it.time
-//            logMessage("getLocation\nlatitude = $latitude,\nlongitude = $longitude\nlocation = $location,\naccuracy = $accuracy,\ntime = $time")
-//            viewModel.fetchNearRestaurantMap(0, latitude, longitude)
-//        }
-//
-//        locationListener = object : LocationListener {
-//            override fun onLocationChanged(location: Location) {
-//                // 위치 정보가 변경될 때 호출되는 콜백
-//                logMessage("onLocationChanged")
-//                logMessage("${location.latitude} ${location.latitude}")
-//            }
-//
-//            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-//                // 위치 제공자 상태 변경 시 호출되는 콜백
-//                logMessage("onStatusChanged")
-//            }
-//
-//            override fun onProviderEnabled(provider: String) {
-//                // 위치 제공자가 사용 가능할 때 호출되는 콜백
-//                logMessage("onProviderEnabled")
-//            }
-//
-//            override fun onProviderDisabled(provider: String) {
-//                // 위치 제공자가 사용 불가능할 때 호출되는 콜백
-//                logMessage("onProviderDisabled")
-//            }
-//        }
-//        startLocationUpdates()
-//    }
-
     // BottomSheet Sizing | Height 70%
     private fun getBottomSheetDialogDefaultHeight(per: Int): Int {
         return getWindowHeight() * per / 100
-        // 위 수치는 기기 높이 대비 70%로 높이를 설정
+        // 위 수치는 기기 높이 대비 설정한 퍼센트로 높이를 설정
     }
 
     private fun getWindowHeight(): Int {
@@ -331,81 +283,85 @@ class VeganMapFragment : BaseFragment<FragmentMainMapBinding>(R.layout.fragment_
         }
     }
 
-    private fun getLocation() {
-        logMessage("getLocation")
-        locationManager = ContextCompat.getSystemService(
-            requireContext(),
-            LocationManager::class.java
-        ) as LocationManager
+    // 위치 업데이트 요청 함수
+    private fun requestLocationUpdates() {
+        val locationRequest = LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 1000L)
+            .apply {
+                setMinUpdateDistanceMeters(10f) // 위치 업데이트 간의 최소 거리 (10미터)
+                setGranularity(Granularity.GRANULARITY_FINE)
+                setWaitForAccurateLocation(true)
+            }.build()
 
-        locationListener = object : LocationListener {
-            override fun onLocationChanged(location: Location) {
-                logMessage("onLocationChanged")
-                logMessage("${location.latitude} ${location.longitude}")
-
-                val latitude = location.latitude
-                val longitude = location.longitude
-                val accuracy = location.accuracy
-                val time = location.time
-                logMessage("getLocation\nlatitude = $latitude,\nlongitude = $longitude\nlocation = $location,\naccuracy = $accuracy,\ntime = $time")
-                viewModel.fetchNearRestaurantMap(0, latitude, longitude)
-
-                locationManager.removeUpdates(this) // 위치 업데이트 중지
-            }
-
-            override fun onStatusChanged(provider: String?, status: Int, extras: Bundle?) {
-                logMessage("onStatusChanged")
-            }
-
-            override fun onProviderEnabled(provider: String) {
-                logMessage("onProviderEnabled")
-            }
-
-            override fun onProviderDisabled(provider: String) {
-                logMessage("onProviderDisabled")
-            }
-        }
-
-        // 위치 정보 제공자 설정
-        val providers = listOf(LocationManager.GPS_PROVIDER, LocationManager.NETWORK_PROVIDER)
-        var location: Location? = null
-
-        for (provider in providers) {
-            location = locationManager.getLastKnownLocation(provider)
-            if (location != null) break
-        }
-
-        if (location != null) {
-            logMessage("location = $location")
-            val latitude = location.latitude
-            val longitude = location.longitude
-            val accuracy = location.accuracy
-            val time = location.time
-            logMessage("getLocation\nlatitude = $latitude,\nlongitude = $longitude\nlocation = $location,\naccuracy = $accuracy,\ntime = $time")
-            viewModel.fetchNearRestaurantMap(0, latitude, longitude)
-        } else {
-            logMessage("location is null, requesting location updates")
-            startLocationUpdates()
+        try {
+            // 위치 업데이트 요청
+            fusedLocationProviderClient.requestLocationUpdates(
+                locationRequest,
+                locationCallback,
+                null
+            )
+            isLocationUpdateRequested = true
+        } catch (e: SecurityException) {
+            e.printStackTrace()
+            // 위치 권한이 없는 경우 처리
+            logMessage("Location permission not granted")
         }
     }
 
-    private fun startLocationUpdates() {
-        try {
-            locationManager.requestLocationUpdates(
-                LocationManager.GPS_PROVIDER,
-                5000L, // 5초
-                10f, // 10미터
-                locationListener
-            )
-            locationManager.requestLocationUpdates(
-                LocationManager.NETWORK_PROVIDER,
-                5000L, // 5초
-                10f, // 10미터
-                locationListener
-            )
-        } catch (e: SecurityException) {
-            logMessage("Location permission not granted")
+    // 위치 업데이트 요청 중지 함수
+    private fun removeLocationUpdates() {
+        if (isLocationUpdateRequested) {
+            fusedLocationProviderClient.removeLocationUpdates(locationCallback)
+            isLocationUpdateRequested = false
         }
+    }
+
+    // 현재 위치를 가져오는 함수
+    private fun getLocation() {
+        if (ActivityCompat.checkSelfPermission(
+                requireContext(),
+                ACCESS_FINE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(
+                requireContext(),
+                ACCESS_COARSE_LOCATION
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            // 권한이 없는 경우 처리
+            logMessage("Location permission Not Granted")
+            return
+        } else {
+            logMessage("Location permission Granted")
+        }
+
+        fusedLocationProviderClient.lastLocation
+            .addOnSuccessListener { location ->
+                location?.let {
+                    val latitude = it.latitude
+                    val longitude = it.longitude
+                    logMessage("Current Location: Latitude = $latitude, Longitude = $longitude")
+                    // 현재 위치 저장
+                    currentLocation = LatLng.from(latitude, longitude)
+                    // 지도 중심 이동
+                    kakaoMap?.moveCamera(
+                        CameraUpdateFactory.newCenterPosition(
+                            LatLng.from(
+                                currentLocation!!.latitude,
+                                currentLocation!!.longitude
+                            )
+                        )
+                    )
+                    CameraUpdateFactory.zoomTo(15)
+                    // 주변 식당 정보 가져오기
+                    viewModel.fetchNearRestaurantMap(0, latitude, longitude)
+                } ?: run {
+                    // 마지막 위치를 가져올 수 없는 경우 위치 업데이트 요청
+                    requestLocationUpdates()
+                }
+            }
+            .addOnFailureListener { exception ->
+                exception.printStackTrace()
+                // 위치 정보를 가져오는 데 실패한 경우 처리
+                logMessage("Failed to get location")
+            }
     }
 
     private fun checkAndRequestPermissions() {
@@ -440,6 +396,7 @@ class VeganMapFragment : BaseFragment<FragmentMainMapBinding>(R.layout.fragment_
                     logMessage(
                         "shouldShowRequestPermissionRationale = true"
                     )
+                    showPermissionRationaleDialog()
                 } else {
                     logMessage(
                         "shouldShowRequestPermissionRationale = false"
@@ -451,7 +408,7 @@ class VeganMapFragment : BaseFragment<FragmentMainMapBinding>(R.layout.fragment_
         }
     }
 
-    //     권한 재요청
+    // 권한 재요청 다이얼로그
     private fun showPermissionRationaleDialog() {
         var isRetry = false
         PermissionDialog.Builder()
@@ -474,7 +431,7 @@ class VeganMapFragment : BaseFragment<FragmentMainMapBinding>(R.layout.fragment_
             .show(childFragmentManager, "showPermissionRationaleDialog")
     }
 
-    // 권한 허용 안함
+    // 권한 허용 안함 다이얼로그
     private fun showPermissionDeniedDialog() {
         PermissionDialog.Builder()
             .setTitle("기능 사용 불가 안내")
@@ -524,10 +481,60 @@ class VeganMapFragment : BaseFragment<FragmentMainMapBinding>(R.layout.fragment_
     override fun onPause() {
         super.onPause()
         mapView.pause()
+        removeLocationUpdates() // 위치 업데이트 중지
     }
 
     override fun onDestroyView() {
         super.onDestroyView()
-        locationManager.removeUpdates(locationListener)
+        removeLocationUpdates() // 위치 업데이트 중지
     }
+
+    private val locationPermissionLauncher =
+        registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { isGranted ->
+            val isFineLocation = isGranted[Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+            val isCoarseLocation = isGranted[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false
+
+            when {
+                isFineLocation && isCoarseLocation -> {
+                    // 정확한 위치 권한 승인
+                    logMessage("locationPermissionLauncher Fine Location, Coarse Location Granted 정확한 위치 권한 승인")
+                    getLocation()
+                }
+
+                !isFineLocation && isCoarseLocation -> {
+                    // 대략적인 위치 권한 승인
+                    logMessage("locationPermissionLauncher Only Coarse Location Granted 대략적인 위치 권한 승인")
+                    getLocation()
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(
+                            requireActivity(),
+                            ACCESS_FINE_LOCATION
+                        )
+                    ) {
+                        logMessage("locationPermissionLauncher Fine Location 거부 경험 있음")
+                        showPermissionDeniedDialog()
+                    } else {
+                        logMessage("locationPermissionLauncher Fine Location 거부 경험 없음")
+                        showFineLocationDialog()
+                    }
+
+                }
+
+                else -> {
+                    // 위치 권한 승인하지 않음
+                    logMessage("locationPermissionLauncher Permission Denied 위치 권한 거부")
+                    if (ActivityCompat.shouldShowRequestPermissionRationale(
+                            requireActivity(),
+                            ACCESS_COARSE_LOCATION
+                        )
+                    ) {
+                        logMessage("locationPermissionLauncher 위치 권한 거부 경험 없음")
+                        showPermissionRationaleDialog()
+                    } else {
+                        logMessage("locationPermissionLauncher 위치 권한 거부 경험 있음")
+                        showPermissionDeniedDialog()
+                    }
+                }
+            }
+        }
+
 }

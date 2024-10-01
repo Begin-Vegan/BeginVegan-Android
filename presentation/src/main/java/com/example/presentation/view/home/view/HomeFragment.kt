@@ -5,12 +5,22 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
+import android.os.Build
 import android.os.Bundle
+import android.text.Html
+import android.text.Spannable
+import android.text.SpannableString
+import android.text.SpannableStringBuilder
+import android.text.style.ForegroundColorSpan
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
+import androidx.lifecycle.lifecycleScope
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.domain.model.map.VeganMapRestaurant
 import com.example.presentation.R
 import com.example.presentation.adapter.home.HomeRestaurantRVAdapter
@@ -19,9 +29,12 @@ import com.example.presentation.config.navigation.MainNavigationHandler
 import com.example.presentation.databinding.FragmentMainHomeBinding
 import com.example.presentation.util.DrawerController
 import com.example.presentation.util.PermissionDialog
+import com.example.presentation.util.UserLevelLists
 import com.example.presentation.view.main.viewModel.MainViewModel
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import javax.inject.Inject
 
 
@@ -101,6 +114,9 @@ class HomeFragment : BaseFragment<FragmentMainHomeBinding>(R.layout.fragment_mai
     override fun init() {
         binding.lifecycleOwner = this
 
+        mainViewModel.getRecommendRestaurant()
+        mainViewModel.getUserInfo()
+
         setUserInfo()
 
         setTipsTab()
@@ -110,9 +126,100 @@ class HomeFragment : BaseFragment<FragmentMainHomeBinding>(R.layout.fragment_mai
         setBeganTest()
 
         checkAndRequestPermissions()
+
+        setRecommendRestaurant()
+
+        setMoreButton()
+    }
+
+    private fun setMoreButton() {
+        binding.btnRecommendMore.setOnClickListener {
+            mainNavigationHandler.navigateToMap()
+        }
+    }
+
+    private fun setRecommendRestaurant() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            mainViewModel.recommendRestaurantList.collect { restaurantList ->
+                if (restaurantList.isNotEmpty()) {
+                    logMessage("viewLifecycleOwner collect restaurantList $restaurantList")
+                    binding.tvRestaurantNameFirst.text = restaurantList[0].name
+                    binding.tvRestaurantNameSecond.text = restaurantList[1].name
+                    binding.tvRestaurantNameThird.text = restaurantList[2].name
+
+                    Glide.with(requireContext())
+                        .load(restaurantList[0].thumbnail)
+                        .error(R.drawable.default_cafe_image)
+                        .into(binding.ivItemRestaurantImageFirst)
+                    Glide.with(requireContext())
+                        .load(restaurantList[1].thumbnail)
+                        .error(R.drawable.default_cafe_image)
+                        .into(binding.ivItemRestaurantImageSecond)
+                    Glide.with(requireContext())
+                        .load(restaurantList[2].thumbnail)
+                        .error(R.drawable.default_cafe_image)
+                        .into(binding.ivItemRestaurantImageThird)
+                }
+            }
+        }
     }
 
     private fun setUserInfo() {
+        viewLifecycleOwner.lifecycleScope.launch {
+            mainViewModel.nickName.collect { userName ->
+                logMessage("viewModel userName ${userName}")
+                val headlineText = getString(R.string.home_user_name, userName)
+                val headlineSpannable = SpannableString(headlineText)
+
+                val userNameColor1 =
+                    ContextCompat.getColor(requireContext(), R.color.colorUserName1)
+                val userNameStartIndex1 = headlineText.indexOf(userName)
+                val userNameEndIndex1 = userNameStartIndex1 + userName.length
+
+                headlineSpannable.setSpan(
+                    ForegroundColorSpan(userNameColor1),
+                    userNameStartIndex1,
+                    userNameEndIndex1,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+
+                binding.homeHeadlineUserName.text = headlineSpannable
+
+                val recommendTitleText = getString(R.string.home_restaurant_title, userName)
+                val recommendSpannable = SpannableString(recommendTitleText)
+
+                val userNameColor2 =
+                    ContextCompat.getColor(requireContext(), R.color.colorUserName2)
+                val userNameStartIndex2 = recommendTitleText.indexOf(userName)
+                val userNameEndIndex2 = userNameStartIndex2 + userName.length
+
+                recommendSpannable.setSpan(
+                    ForegroundColorSpan(userNameColor2),
+                    userNameStartIndex2,
+                    userNameEndIndex2,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+
+                binding.tvRecommendTitle.text = recommendSpannable
+            }
+
+
+        }
+        viewLifecycleOwner.lifecycleScope.launch {
+            mainViewModel.userLevel.collect { userLevel ->
+                if (userLevel.isNotBlank()) {
+                    logMessage("viewModel userLevel ${userLevel}")
+                    val userLevelEng = resources.getStringArray(R.array.user_levels_eng)
+                    val userLevelLists = UserLevelLists(requireContext())
+                    val levelIcons = userLevelLists.userLevelIcons
+                    val userLevelIndex = userLevelEng.indexOf(userLevel)
+                    logMessage("viewModel userLevelIndex ${userLevelIndex}")
+                    Glide.with(requireContext())
+                        .load(levelIcons[userLevelIndex])
+                        .into(binding.ivIllusUserLevel)
+                }
+            }
+        }
     }
 
 
@@ -226,7 +333,6 @@ class HomeFragment : BaseFragment<FragmentMainHomeBinding>(R.layout.fragment_mai
             .replace(R.id.fl_tips_content, fragment)
             .commit()
     }
-
 
 
     private fun checkAndRequestPermissions() {

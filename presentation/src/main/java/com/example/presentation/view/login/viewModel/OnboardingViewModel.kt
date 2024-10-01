@@ -15,11 +15,13 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OnboardingViewModel @Inject constructor(
-    private val saveUserInfoUseCase: SaveUserInfoUseCase
+    private val saveUserInfoUseCase: SaveUserInfoUseCase,
+
 ) : ViewModel() {
 
     val nickName = MutableLiveData<String>()
     val veganLevel = MutableLiveData<String>()
+
 
     private var _validNickName = MutableLiveData<Boolean>()
     private var _validVeganLevel = MutableLiveData<Boolean>()
@@ -40,6 +42,8 @@ class OnboardingViewModel @Inject constructor(
         _validNickName.value = false
         _validVeganLevel.value = false
     }
+
+
 
     fun updateProfileImageUri(data: GalleryImage?) {
         _profileImageUri.value = data

@@ -56,7 +56,7 @@ class VeganMapSearchFragment :
 
         veganMapSearchRVAdapter = VeganMapSearchRVAdapter()
 
-        binding.rvSearch.apply{
+        binding.rvSearch.apply {
             adapter = veganMapSearchRVAdapter
             itemAnimator = null
         }
@@ -93,9 +93,11 @@ class VeganMapSearchFragment :
     private fun onSearch() {
         binding.tieSearch.setOnEditorActionListener { v, actionId, event ->
             if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                viewModel.insertHistory(v.text.toString())
-                //데이터 넘기는 부분
+                if (v.text.toString().isNotBlank()) {
+                    viewModel.insertHistory(v.text.toString())
+                    //데이터 넘기는 부분
 //                navigateSearchResult(v.text.toString())
+                }
                 true
             } else {
                 false

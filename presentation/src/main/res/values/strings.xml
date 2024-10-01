@@ -388,9 +388,9 @@
     <string name="tv01"></string>
     <!-- Home -->
     <string name="home_hello">안녕하세요,</string>
-    <string name="home_user_name"><font color='#FFFDD23B'>%1$s</font> 님</string>
+    <string name="home_user_name">%1$s 님</string>
     <string name="home_description">비거너의 여정으로 함께 떠나요!</string>
-    <string name="home_restaurant_title"><font color='#FF009861'>%1$s</font> 님을 위한 식당이에요</string>
+    <string name="home_restaurant_title">%1$s 님을 위한 식당이에요</string>
 
     <!-- 알림 -->
     <string name="notification">알림</string>
@@ -404,7 +404,7 @@
 
     <!-- Map -->
     <string name="map_search_hint">검색어 입력 (ex.강남, 한식)</string>
-    <string name="map_bottom_sheet_title_nearby"><font color='#FF009861'>%1$s</font> 님의 주변에 위치한 식당이에요.</string>
+    <string name="map_bottom_sheet_title_nearby">%1$s 님의 주변에 위치한 식당이에요.</string>
     <!--    <string name="map_how_far">내 위치로부터 <font color="#FF005536">%1$s</font></string>-->
     <string name="map_how_far">내 위치로부터</string>
     <!--    <string name="map_how_far">내 위치로부터 &lt;font color="#FF005536">%1$s&lt;/font></string>-->

@@ -4,7 +4,11 @@ import com.example.data.model.userInfo.HomeUserInfoResponse
 import com.example.data.repository.local.auth.AuthTokenDataSource
 import com.example.data.retrofit.auth.UserInfoService
 import com.skydoves.sandwich.ApiResponse
+import com.skydoves.sandwich.retrofit.errorBody
+import com.skydoves.sandwich.suspendOnError
+import com.skydoves.sandwich.suspendOnSuccess
 import kotlinx.coroutines.flow.first
+import timber.log.Timber
 import javax.inject.Inject
 
 class HomeUserInfoDataSourceImpl @Inject constructor(
@@ -17,7 +21,13 @@ class HomeUserInfoDataSourceImpl @Inject constructor(
 
         return getHomeUserInfo.getHomeUserInfo(
             authHeader
-        )
+        )  .suspendOnSuccess {
+            Timber.d("getHomeUserInfo successful${this.data}")
+            ApiResponse.Success(this.data)
+        }.suspendOnError {
+            Timber.e("getHomeUserInfo error: ${this.errorBody}")
+            ApiResponse.Failure.Error(this)
+        }
     }
 
 }

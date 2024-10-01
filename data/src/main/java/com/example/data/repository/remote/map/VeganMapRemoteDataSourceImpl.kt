@@ -1,9 +1,11 @@
 package com.example.data.repository.remote.map
 
+import com.example.data.model.map.RecommendRestaurantResponse
 import com.example.data.model.map.RestaurantDetailResponse
 import com.example.data.model.map.VeganMapRestaurantResponse
 import com.example.data.repository.local.auth.AuthTokenDataSource
 import com.example.data.retrofit.map.VeganMapService
+import com.example.domain.model.map.RecommendRestaurant
 import com.skydoves.sandwich.ApiResponse
 import com.skydoves.sandwich.retrofit.errorBody
 import com.skydoves.sandwich.suspendOnError
@@ -29,9 +31,9 @@ class VeganMapRemoteDataSourceImpl @Inject constructor(
                 Timber.d("getNearRestaurantMap successful${this.data}")
                 ApiResponse.Success(this.data)
             }.suspendOnError {
-            Timber.e("getNearRestaurantMap error: ${this.errorBody}")
-            ApiResponse.Failure.Error(this)
-        }
+                Timber.e("getNearRestaurantMap error: ${this.errorBody}")
+                ApiResponse.Failure.Error(this)
+            }
     }
 
     override suspend fun getRestaurantDetail(
@@ -50,4 +52,41 @@ class VeganMapRemoteDataSourceImpl @Inject constructor(
                 ApiResponse.Failure.Error(this)
             }
     }
+
+    override suspend fun getNearRestaurantWithPermission(
+        count: Long,
+        latitude: String,
+        longitude: String
+    ): ApiResponse<RecommendRestaurantResponse> {
+        val accessToken = authTokenDataSource.accessToken.first()
+        val authHeader = "Bearer $accessToken"
+        return veganMapService.getNearRestaurantWithPermission(
+            authHeader,
+            count,
+            latitude,
+            longitude
+        )
+            .suspendOnSuccess {
+                Timber.d("getNearRestaurantWithPermission successful${this.data}")
+                ApiResponse.Success(this.data)
+            }.suspendOnError {
+                Timber.e("getNearRestaurantWithPermission error: ${this.errorBody}")
+                ApiResponse.Failure.Error(this)
+            }
+    }
+
+    override suspend fun getNearRestaurantWithOutPermission(count: Long): ApiResponse<RecommendRestaurantResponse> {
+        val accessToken = authTokenDataSource.accessToken.first()
+        val authHeader = "Bearer $accessToken"
+        return veganMapService.getNearRestaurantWithOutPermission(authHeader, count)
+            .suspendOnSuccess {
+                Timber.d("getNearRestaurantWithOutPermission successful${this.data}")
+                ApiResponse.Success(this.data)
+            }.suspendOnError {
+                Timber.e("getNearRestaurantWithOutPermission error: ${this.errorBody}")
+                ApiResponse.Failure.Error(this)
+            }
+    }
+
+
 }

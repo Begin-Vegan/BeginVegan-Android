@@ -2,6 +2,7 @@ package com.example.data.di.map
 
 import com.example.data.di.core.db.DataStoreModule
 import com.example.data.di.core.network.NetworkModule
+import com.example.data.mapper.map.RecommendRestaurantMapper
 import com.example.data.mapper.map.RestaurantDetailMapper
 import com.example.data.mapper.map.VeganMapMapper
 import com.example.data.mapper.tips.TipsRecipeDetailMapper
@@ -42,12 +43,14 @@ class VeganMapModule {
     fun provideVeganMapRepository(
         veganMapRemoteDataSource: VeganMapRemoteDataSource,
         veganMapMapper: VeganMapMapper,
-        restaurantDetailMapper: RestaurantDetailMapper
+        restaurantDetailMapper: RestaurantDetailMapper,
+        recommendRestaurantMapper: RecommendRestaurantMapper
     ): VeganMapRepository {
         return VeganMapRepositoryImpl(
             veganMapRemoteDataSource,
             veganMapMapper,
-            restaurantDetailMapper
+            restaurantDetailMapper,
+            recommendRestaurantMapper
         )
     }
 
@@ -61,6 +64,12 @@ class VeganMapModule {
     @Singleton
     fun provideRestaurantDetailMapper(): RestaurantDetailMapper {
         return RestaurantDetailMapper()
+    }
+
+    @Provides
+    @Singleton
+    fun provideRecommendRestaurantMapper(): RecommendRestaurantMapper {
+        return RecommendRestaurantMapper()
     }
 
 }

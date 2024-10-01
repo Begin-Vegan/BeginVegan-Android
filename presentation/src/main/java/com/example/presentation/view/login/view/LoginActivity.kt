@@ -16,17 +16,28 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
     override fun initViewModel() {
         viewModel.loginState.observe(this) { isLoggedIn ->
             if (isLoggedIn) {
-                if(viewModel.additionalInfoProvided){
+                if (viewModel.additionalInfoProvided) {
                     navigateToMainActivity()
-                }else{
+                } else {
                     navigateToOnboardingActivity()
                 }
+            }
+        }
+        viewModel.checkFirstRun()
+        viewModel.isFirstRun.observe(this) {
+            if (it) {
+                // 첫 실행 o
+                viewModel.fetchFirstRunRecord()
+                NoticePermissionDialog().show(supportFragmentManager, "PermissionDialog")
+                logMessage("initViewModel: first run check ${viewModel.isFirstRun.value}")
+            }else{
+                // 첫 실행 x
+                logMessage("initViewModel: first run check ${viewModel.isFirstRun.value}")
             }
         }
     }
 
     override fun init() {
-        NoticePermissionDialog().show(supportFragmentManager, "PermissionDialog")
         setOnClickLogin()
     }
 
@@ -40,7 +51,8 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
     }
-    private fun navigateToOnboardingActivity(){
+
+    private fun navigateToOnboardingActivity() {
         val intent = Intent(this, OnboardingActivity::class.java)
         startActivity(intent)
     }

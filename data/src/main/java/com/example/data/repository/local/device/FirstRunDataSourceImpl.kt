@@ -9,8 +9,7 @@ class FirstRunDataSourceImpl @Inject constructor(
 ) : FirstRunDataSource {
 
     override suspend fun isFirstRun(): Boolean {
-        val firstRun = firstRunDao.getFirstRun()
-        return firstRun == null || firstRun.isFirstRun
+        return firstRunDao.isFirstRun()
     }
 
     override suspend fun setFirstRunCompleted() {
