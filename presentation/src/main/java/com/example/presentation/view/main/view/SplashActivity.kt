@@ -17,7 +17,6 @@ import com.example.presentation.view.login.view.LoginActivity
 import com.example.presentation.view.main.viewModel.SplashViewModel
 
 class SplashActivity : AppCompatActivity() {
-
     private lateinit var binding: ActivitySplashBinding
     private val viewModel: SplashViewModel by viewModels()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -42,5 +41,4 @@ class SplashActivity : AppCompatActivity() {
             finish()
         }, 5000) // 3초
     }
-
 }

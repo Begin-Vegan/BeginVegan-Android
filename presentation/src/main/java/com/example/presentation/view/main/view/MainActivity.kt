@@ -1,18 +1,27 @@
 package com.example.presentation.view.main.view
 
+import android.content.Context
+import android.content.Intent
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import com.example.core_fcm.model.FcmData
+import com.example.core_fcm.useCase.FcmTokenUseCase
 import com.example.presentation.R
 import com.example.presentation.base.BaseActivity
 import com.example.presentation.config.navigation.MainNavigationHandler
 import com.example.presentation.config.navigation.MainNavigationImpl
 import com.example.presentation.databinding.ActivityMainBinding
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
+import timber.log.Timber
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
@@ -27,6 +36,24 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         setNavController()
         setBottomNav()
         setupOnBackPressedCallback()
+
+        checkFcmType()
+    }
+
+    /**
+     * FCM Push 알림 클릭 시 분기 처리
+     */
+    private fun checkFcmType(){
+        val fcmData = intent.getParcelableExtra<FcmData>("fcmData")
+        fcmData?.alarmType.let{
+            Timber.d("fcmData?.alarmType.let: $it")
+            when(it){
+                "MYPAGE" -> mainNavigationHandler.navigateToMypage()
+                "MAP" -> mainNavigationHandler.navigateToMap()
+                "TIPS" -> mainNavigationHandler.navigateToTips()
+                "INFORMATION" -> {}
+            }
+        }
     }
 
     private fun setNavController() {
@@ -67,6 +94,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
         }
     }
 
+    //BackStack
     private fun setupOnBackPressedCallback() {
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -80,5 +108,18 @@ class MainActivity : BaseActivity<ActivityMainBinding>(R.layout.activity_main) {
                 }
             }
         })
+    }
+
+    /**
+     * FCM Intent 주입
+     */
+    companion object{
+        fun createIntent(
+            context: Context,
+            fcmData: FcmData
+        ) = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            this.putExtra("fcmData",fcmData)
+        }
     }
 }

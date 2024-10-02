@@ -17,13 +17,13 @@ import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
-class NotificationReadRvAdapter (private val list:List<Alarm>, private val context: Context):
-    RecyclerView.Adapter<NotificationReadRvAdapter.RecyclerViewHolder>(){
+class NotificationReadRvAdapter(private val list: List<Alarm>, private val context: Context) :
+    RecyclerView.Adapter<NotificationReadRvAdapter.RecyclerViewHolder>() {
     private var listener: OnItemClickListener? = null
 
-    inner class RecyclerViewHolder(private val binding: ItemNotificationBinding):
-        RecyclerView.ViewHolder(binding.root){
-        fun bind(position: Int){
+    inner class RecyclerViewHolder(private val binding: ItemNotificationBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun bind(position: Int) {
             val item = list[position]
             binding.tvBadgeType.text = item.alarmType
             binding.ivBadgeNew.visibility = View.INVISIBLE
@@ -43,25 +43,28 @@ class NotificationReadRvAdapter (private val list:List<Alarm>, private val conte
 
     override fun onBindViewHolder(holder: RecyclerViewHolder, position: Int) {
         holder.bind(position)
-        if(position!= RecyclerView.NO_POSITION){
+        if (position != RecyclerView.NO_POSITION) {
             holder.itemView.setOnClickListener {
                 listener?.onItemClick(it, list[position], position)
             }
         }
     }
 
-    interface OnItemClickListener{
+    interface OnItemClickListener {
         fun onItemClick(v: View, data: Alarm, position: Int)
     }
-    fun setOnItemClickListener(listener: OnItemClickListener){
+
+    fun setOnItemClickListener(listener: OnItemClickListener) {
         this.listener = listener
     }
 
-    private fun transferDate(date:String):String{
-        val stringToDate = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-        val newDate = LocalDateTime.parse(date, stringToDate)
+    private fun transferDate(date: String): String {
+//        val stringToDate = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+////        val trimmedInput = date.substring(0, date.indexOf('.'))
+//        val newDate = stringToDate.parse(date)
+        val localDateTime = LocalDateTime.parse(date)
 
         val dateToString = DateTimeFormatter.ofPattern("yyyy/MM/dd")
-        return newDate.format(dateToString)
+        return localDateTime.format(dateToString)
     }
 }

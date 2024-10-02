@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.core_fcm.useCase.FcmTokenUseCase
 import com.example.domain.model.map.RecommendRestaurant
 import com.example.domain.useCase.map.restaurant.GetNearRestaurantUseCase
 import com.example.domain.useCase.userInfo.HomeUserInfoUseCase
@@ -21,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val homeUserInfoUseCase: HomeUserInfoUseCase,
-    private val getNearRestaurantUseCase: GetNearRestaurantUseCase
+    private val getNearRestaurantUseCase: GetNearRestaurantUseCase,
+    private val fcmTokenUseCase: FcmTokenUseCase
 ) : ViewModel() {
 
     private val _nickName = MutableStateFlow("")
@@ -84,6 +86,14 @@ class MainViewModel @Inject constructor(
                     Timber.d("getRecommendRestaurant list $recommendList")
                     _recommendRestaurantList.value = recommendList
                 }
+        }
+    }
+
+    fun postFcmPush(){
+        viewModelScope.launch(Dispatchers.IO) {
+            fcmTokenUseCase.postFcmMessage(
+                "가나다라마바사","테스트 메시지 입니다.","MYPAGE",1,"REVIEW_RECOMMEND",userLevel = null
+            )
         }
     }
 

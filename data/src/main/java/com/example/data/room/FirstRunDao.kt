@@ -6,7 +6,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.data.model.device.FirstRunEntity
 
-
 @Dao
 interface FirstRunDao {
 

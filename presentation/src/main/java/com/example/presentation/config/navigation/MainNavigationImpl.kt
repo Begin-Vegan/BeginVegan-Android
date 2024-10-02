@@ -116,8 +116,7 @@ class MainNavigationImpl @Inject constructor(private val navController: NavContr
         if(currentId == R.id.mainHomeFragment){
             navController.navigate(destinationId)
         }else{
-            navController.navigate(destinationId, null,
-                NavOptions.Builder().setPopUpTo(currentId, true).build())
+            navController.navigate(destinationId, null, NavOptions.Builder().setPopUpTo(currentId, true).build())
         }
     }
 }

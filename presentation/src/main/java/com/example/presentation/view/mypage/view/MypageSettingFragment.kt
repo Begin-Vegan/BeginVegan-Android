@@ -1,5 +1,13 @@
 package com.example.presentation.view.mypage.view
 
+import android.Manifest
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import android.provider.Settings
+import android.util.Log
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.example.presentation.R
@@ -33,15 +41,38 @@ class MypageSettingFragment : BaseFragment<FragmentMypageSettingBinding>(R.layou
             //Patch
             binding.scPushSwitch.setOnCheckedChangeListener { _, isChecked ->
                 mypagePushViewModel.patchPush()
-                MypagePushAlertDialog(isChecked).show(childFragmentManager, "RefusePushDialog")
+                MypagePushAlertDialog(isChecked, true).show(childFragmentManager, "RefusePushDialog")
+                if(isChecked){
+                    requestNotificationPermission()
+                }else{
+
+                }
             }
         }
     }
 
-    //backStack
-    private fun setBackUp(){
-        binding.ibBackUp.setOnClickListener {
-            findNavController().popBackStack()
+    //알림 권한 설정
+    private fun requestNotificationPermission() {
+        // Android 13 이상일 경우에만 알림 권한 요청
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if(ActivityCompat.shouldShowRequestPermissionRationale(
+                    requireActivity(), Manifest.permission.POST_NOTIFICATIONS)) {
+                // 권한 요청의 필요성을 설명하는 다이얼로그를 표시
+                Timber.d("권한 요청의 필요성을 설명하는 다이얼로그를 표시")
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    1
+                )
+//                showPermissionRationale()
+            } else {
+                // 권한 요청
+                Timber.d("권한 요청")
+                val intent = Intent()
+                intent.action = Settings.ACTION_APPLICATION_DETAILS_SETTINGS
+                intent.data = android.net.Uri.parse("package:" +requireContext() .packageName)
+                startActivity(intent)
+            }
         }
     }
 
@@ -75,5 +106,12 @@ class MypageSettingFragment : BaseFragment<FragmentMypageSettingBinding>(R.layou
             }
 
         })
+    }
+
+    //backStack
+    private fun setBackUp(){
+        binding.ibBackUp.setOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 }

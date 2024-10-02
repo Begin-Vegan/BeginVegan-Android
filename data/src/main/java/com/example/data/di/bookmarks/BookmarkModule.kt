@@ -26,7 +26,10 @@ class BookmarkModule {
 
     @Provides
     @Singleton
-    fun provideBookmarkRemoteDataSource(bookmarkService: BookmarkService, authTokenDataSource: AuthTokenDataSource): BookmarkRemoteDataSource {
+    fun provideBookmarkRemoteDataSource(
+        bookmarkService: BookmarkService,
+        authTokenDataSource: AuthTokenDataSource
+    ): BookmarkRemoteDataSource {
         return BookmarkRemoteDataSourceImpl(bookmarkService,authTokenDataSource)
     }
 

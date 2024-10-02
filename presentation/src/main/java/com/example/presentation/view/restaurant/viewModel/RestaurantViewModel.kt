@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.logging.Filter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,5 +38,9 @@ class RestaurantViewModel @Inject constructor(
                     _restaurantDetail.value = restaurantDetail
                 }
         }
+    }
+
+    fun getRestaurantReviewList(restaurantId: Long,page: Int,isPhoto: Boolean,filter: Filter){
+        
     }
 }

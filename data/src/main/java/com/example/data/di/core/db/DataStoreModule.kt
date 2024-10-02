@@ -7,6 +7,8 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStoreFile
 import com.example.data.repository.local.auth.AuthTokenDataSource
 import com.example.data.repository.local.auth.AuthTokenDataSourceImpl
+import com.example.data.repository.local.fcm.FcmTokenDataSource
+import com.example.data.repository.local.fcm.FcmTokenDataSourceImpl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -36,4 +38,11 @@ object DataStoreModule {
         return AuthTokenDataSourceImpl(provideDataStore)
     }
 
+    @Provides
+    @Singleton
+    fun provideFcmTokenDataSource(
+        provideDataStore: DataStore<Preferences>
+    ):FcmTokenDataSource{
+        return FcmTokenDataSourceImpl(provideDataStore)
+    }
 }

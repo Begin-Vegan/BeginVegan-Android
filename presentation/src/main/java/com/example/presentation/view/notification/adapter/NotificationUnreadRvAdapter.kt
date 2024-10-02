@@ -55,8 +55,10 @@ class NotificationUnreadRvAdapter(private val list:List<Alarm>, private val cont
     }
 
     private fun transferDate(date:String):String{
-        val stringToDate = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss")
-        val newDate = LocalDateTime.parse(date, stringToDate)
+//        val stringToDate =DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", Locale.getDefault())
+        val newDate = LocalDateTime.parse(date)
+
+//        val newDate = LocalDateTime.parse(date, stringToDate)
         val nowDate = LocalDateTime.now()
 
         val minutesDifference = ChronoUnit.MINUTES.between(newDate, nowDate)

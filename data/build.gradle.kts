@@ -48,6 +48,7 @@ android {
 
 dependencies {
     implementation(project(":domain"))
+    implementation(project(":core-fcm"))
 
     // Hilt
     implementation(Dependencies.DAGGER_HILT)

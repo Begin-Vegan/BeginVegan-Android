@@ -56,5 +56,4 @@ class LoginActivity : BaseActivity<ActivityLoginBinding>(R.layout.activity_login
         val intent = Intent(this, OnboardingActivity::class.java)
         startActivity(intent)
     }
-
 }

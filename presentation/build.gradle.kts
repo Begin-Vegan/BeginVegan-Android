@@ -62,10 +62,17 @@ android {
         buildConfig = true
     }
 }
+//FCM
+buildscript{
+    dependencies{
+        classpath ("com.google.gms:google-services:4.3.5")
+    }
+}
 
 dependencies {
     implementation(project(":domain"))
     implementation(project(":data"))
+    implementation(project(":core-fcm"))
 
     implementation(Dependencies.CORE_KTX)
     implementation(Dependencies.APP_COMPAT)
@@ -178,6 +185,8 @@ dependencies {
 
     implementation ("androidx.camera:camera-view:1.3.4")
     implementation ("androidx.camera:camera-extensions:1.3.4")
+
+
 
 //    implementation 'androidx.core:core-ktx:1.8.0'
 //    implementation 'androidx.appcompat:appcompat:1.6.1'

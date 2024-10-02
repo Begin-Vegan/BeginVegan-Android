@@ -7,10 +7,8 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Build
 import android.os.Bundle
-import android.text.Html
 import android.text.Spannable
 import android.text.SpannableString
-import android.text.SpannableStringBuilder
 import android.text.style.ForegroundColorSpan
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.app.ActivityCompat
@@ -19,8 +17,6 @@ import androidx.fragment.app.Fragment
 import androidx.hilt.navigation.fragment.hiltNavGraphViewModels
 import androidx.lifecycle.lifecycleScope
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
-import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.domain.model.map.VeganMapRestaurant
 import com.example.presentation.R
 import com.example.presentation.adapter.home.HomeRestaurantRVAdapter
@@ -34,6 +30,7 @@ import com.example.presentation.view.main.viewModel.MainViewModel
 import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import com.example.presentation.view.mypage.view.MypagePushAlertDialog
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -41,6 +38,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class HomeFragment : BaseFragment<FragmentMainHomeBinding>(R.layout.fragment_main_home) {
     private lateinit var homeRestaurantRVAdapter: HomeRestaurantRVAdapter
+
     private val mainViewModel: MainViewModel by hiltNavGraphViewModels(R.id.nav_main_graph)
 
     @Inject
@@ -55,8 +53,9 @@ class HomeFragment : BaseFragment<FragmentMainHomeBinding>(R.layout.fragment_mai
     private val permissions = arrayOf(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)
 
     private lateinit var locationListener: LocationListener
-
     private lateinit var locationManager: LocationManager
+
+    private val REQUEST_NOTIFICATION_PERMISSION = 2
 
     private val locationPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) { isGranted ->
@@ -162,6 +161,9 @@ class HomeFragment : BaseFragment<FragmentMainHomeBinding>(R.layout.fragment_mai
                 }
             }
         }
+        requestNotificationPermission()
+
+//        mainViewModel.postFcmPush()
     }
 
     private fun setUserInfo() {
@@ -335,6 +337,13 @@ class HomeFragment : BaseFragment<FragmentMainHomeBinding>(R.layout.fragment_mai
     }
 
 
+    /**
+     * 권한 요청
+     */
+    private fun checkPermissions(permissionList: List<String>) {
+
+    }
+
     private fun checkAndRequestPermissions() {
         when {
             ActivityCompat.checkSelfPermission(
@@ -435,4 +444,71 @@ class HomeFragment : BaseFragment<FragmentMainHomeBinding>(R.layout.fragment_mai
         private const val ACCESS_COARSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION
     }
 
+
+    //알림 권한 설정
+    private fun requestNotificationPermission() {
+        // Android 13 이상일 경우에만 알림 권한 요청
+        Timber.d("requestNotificationPermission 알림 권한 요청 실행 ")
+        Timber.d("Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU: ${Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU}")
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    Manifest.permission.POST_NOTIFICATIONS
+                )
+                == PackageManager.PERMISSION_GRANTED
+            ) {
+                // 이미 권한이 부여된 경우
+                // 권한이 이미 부여된 경우 처리할 로직
+                Timber.d("이미 권한이 부여된 경우")
+            } else if (ActivityCompat.shouldShowRequestPermissionRationale(
+                    requireActivity(),
+                    Manifest.permission.POST_NOTIFICATIONS
+                )
+            ) {
+                // 권한 요청의 필요성을 설명하는 다이얼로그를 표시
+                Timber.d("권한 요청의 필요성을 설명하는 다이얼로그를 표시")
+                showPermissionRationale()
+            } else {
+                // 권한 요청
+                Timber.d("권한 요청")
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    REQUEST_NOTIFICATION_PERMISSION
+                )
+            }
+        }
+    }
+
+    private fun showPermissionRationale() {
+//        AlertDialog.Builder(requireContext())
+//            .setTitle("알림 권한 요청")
+//            .setMessage("'비긴, 비건'에서 알림을 보내도록 허용하시겠습니까?")
+//            .setPositiveButton("허용") { _, _ ->
+//                ActivityCompat.requestPermissions(
+//                    requireActivity(),
+//                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+//                    REQUEST_NOTIFICATION_PERMISSION
+//                )
+//            }
+//            .setNegativeButton("허용 안함"){ _, _ ->
+//                MypagePushAlertDialog(permit = false, mypage = false).show(childFragmentManager, "RefusePushDialog")
+//            }
+//            .show()
+        PermissionDialog.Builder()
+            .setTitle("알림 권한 요청")
+            .setBody("'비긴, 비건'에서 알림을 보내도록 허용하시겠습니까?")
+            .setPositiveButton("허용") {
+                ActivityCompat.requestPermissions(
+                    requireActivity(),
+                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                    REQUEST_NOTIFICATION_PERMISSION
+                )
+            }.setNegativeButton("허용 안함") {
+                MypagePushAlertDialog(permit = false, mypage = false).show(
+                    childFragmentManager,
+                    "RefusePushDialog"
+                )
+            }.show(childFragmentManager, "RefusePushDialog")
+    }
 }

@@ -10,7 +10,7 @@ import com.example.data.model.map.HistorySearchEntity
 
 @Database(
     entities = [HistorySearchEntity::class, FirstRunEntity::class],
-    version = 10,
+    version = 11,
     exportSchema = false
 )
 @TypeConverters(OrmConverter::class)
