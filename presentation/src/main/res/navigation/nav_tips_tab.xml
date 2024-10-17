@@ -6,12 +6,12 @@
 
     <fragment
         android:id="@+id/homeTipsMagazineFragment"
-        android:name="com.example.presentation.view.home.view.HomeTipsMagazineFragment"
+        android:name="com.beginvegan.presentation.view.home.view.HomeTipsMagazineFragment"
         android:label="HomeTipsMagazineFragment" >
     </fragment>
     <fragment
         android:id="@+id/homeTipsRecipeFragment"
-        android:name="com.example.presentation.view.home.view.HomeTipsRecipeFragment"
+        android:name="com.beginvegan.presentation.view.home.view.HomeTipsRecipeFragment"
         android:label="HomeTipsRecipeFragment" >
     </fragment>
 </navigation>

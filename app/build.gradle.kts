@@ -14,15 +14,23 @@ plugins {
 }
 
 android {
-    namespace = "com.example.beginvegan"
+    namespace = "com.beginvegan.app"
     compileSdk = DefaultConfig.COMPILE_SDK_VERSION
 
     val localProperties = Properties()
     localProperties.load(FileInputStream(rootProject.file("local.properties")))
 
+    signingConfigs {
+        create("release") {
+            storeFile = file(localProperties.getProperty("KEYSTORE_FILE"))
+            storePassword = localProperties.getProperty("KEYSTORE_PASSWORD")
+            keyAlias = localProperties.getProperty("KEY_ALIAS")
+            keyPassword = localProperties.getProperty("KEY_PASSWORD")
+        }
+    }
 
     defaultConfig {
-        applicationId = "com.example.beginvegan"
+        applicationId = "com.beginvegan.app"
         minSdk = DefaultConfig.MIN_SDK_VERSION
         targetSdk = DefaultConfig.TARGET_SDK_VERSION
         versionCode = DefaultConfig.VERSION_CODE
@@ -45,7 +53,10 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("release")
+        }
+        debug {
+
         }
     }
     compileOptions {
@@ -151,46 +162,4 @@ dependencies {
     // Add the dependencies for the Firebase Cloud Messaging and Analytics libraries
     implementation("com.google.firebase:firebase-analytics:22.0.0")
 
-    //    implementation 'androidx.core:core-ktx:1.8.0'
-//    implementation 'androidx.appcompat:appcompat:1.6.1'
-//    implementation 'com.google.android.material:material:1.5.0'
-//    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
-//    testImplementation 'junit:junit:4.13.2'
-//    androidTestImplementation 'androidx.test.ext:junit:1.1.5'
-//    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-//
-//    // Retrofit2
-//    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-//    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
-//    implementation ("com.google.code.gson:gson:2.9.0")
-//
-//    // ViewPager2
-//    implementation 'androidx.viewpager2:viewpager2:1.0.0'
-//
-//    // okhttp-logging-interceptor
-//    implementation("com.squareup.okhttp3:logging-interceptor:5.0.0-alpha.2")
-//
-//    // KAKAO MAP API
-//    implementation files('libs/libDaumMapAndroid.jar')
-//
-
-//
-//    // Splash Screen
-//    implementation 'androidx.core:core-splashscreen:1.0.0'
-//
-//    // Loading Bar
-//    implementation 'com.github.ybq:Android-SpinKit:1.4.0'
-//    // indicator
-//    implementation 'me.relex:circleindicator:2.1.6'
-//    //glide
-//    implementation 'com.github.bumptech.glide:glide:4.15.1'
-//    // GPS
-//    implementation 'com.google.android.gms:play-services-location:21.0.1'
-//    // Circle ImageView
-//    implementation 'de.hdodenhof:circleimageview:3.1.0'
-//    // CircleIndicator
-//    implementation 'me.relex:circleindicator:1.3.2'
-//    // Firebase
-//    implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
-//    implementation("com.google.firebase:firebase-analytics")
 }

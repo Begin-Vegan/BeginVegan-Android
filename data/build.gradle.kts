@@ -9,7 +9,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.data"
+    namespace = "com.beginvegan.data"
     compileSdk = DefaultConfig.COMPILE_SDK_VERSION
 
     val localProperties = Properties()

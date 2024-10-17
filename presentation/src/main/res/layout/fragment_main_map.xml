@@ -6,15 +6,9 @@
 
     </data>
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout
-        android:id="@+id/coordinator_layout"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <com.kakao.vectormap.MapView
-            android:id="@+id/map_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
 
         <Toolbar
             android:id="@+id/tb_search"
@@ -73,135 +67,88 @@
 
             </androidx.cardview.widget.CardView>
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/cl_search_view_result"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone">
-
-                <ImageButton
-                    android:id="@+id/ib_back_up"
-                    android:layout_width="@dimen/global_button_size"
-                    android:layout_height="match_parent"
-                    android:background="@color/color_primary"
-                    android:src="@drawable/ic_arrow"
-                    android:tint="@color/color_white"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <androidx.cardview.widget.CardView
-                    style="@style/SearchViewLayout"
-                    android:layout_width="0dp"
-                    android:layout_height="@dimen/item_40"
-                    android:layout_marginEnd="@dimen/global_margin"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/ib_back_up"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <ImageView
-                            android:id="@+id/iv_search_result"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/margin_12"
-                            android:src="@drawable/ic_search"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
-                        <Button
-                            android:id="@+id/btn_search_result"
-                            style="@style/CustomSearchViewTextAppearance"
-                            android:layout_width="0dp"
-                            android:layout_height="match_parent"
-                            android:layout_marginStart="@dimen/margin_8"
-                            android:background="@color/color_transparent"
-                            android:gravity="center_vertical|start"
-                            android:hint="@string/map_search_hint"
-                            android:maxLines="1"
-                            android:padding="0dp"
-                            android:paddingStart="0dp"
-                            android:paddingTop="0dp"
-                            android:paddingEnd="0dp"
-                            android:paddingBottom="0dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintStart_toEndOf="@id/iv_search"
-                            app:layout_constraintTop_toTopOf="parent" />
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-                </androidx.cardview.widget.CardView>
-            </androidx.constraintlayout.widget.ConstraintLayout>
         </Toolbar>
-
-
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_collapse"
+        <com.kakao.vectormap.MapView
+            android:id="@+id/map_view"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:paddingBottom="20dp"
-            app:layout_anchor="@id/included_bottom_sheet"
-            app:layout_anchorGravity="top">
+            android:layout_height="0dp"
+            app:layout_constraintTop_toBottomOf="@id/tb_search"
+            app:layout_constraintBottom_toBottomOf="parent"
+            />
+        <androidx.coordinatorlayout.widget.CoordinatorLayout
+            android:id="@+id/coordinator_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tb_search">
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab_current_location"
-                android:layout_width="wrap_content"
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_collapse"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/global_margin"
-                android:backgroundTint="@color/color_white"
-                android:minWidth="40dp"
-                android:minHeight="40dp"
-                android:padding="0dp"
-                android:paddingStart="0dp"
-                android:paddingTop="0dp"
-                android:paddingEnd="0dp"
-                android:scaleType="centerInside"
-                android:src="@drawable/ic_btn_location"
-                app:elevation="0dp"
-                app:fabCustomSize="40dp"
-                app:fabSize="normal"
-                app:backgroundTint="@color/color_gray_00"
-                app:borderWidth="0.1dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent" />
+                android:layout_gravity="top"
+                android:paddingBottom="20dp"
+                app:layout_anchor="@id/included_bottom_sheet"
+                app:layout_anchorGravity="top">
 
-            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-                android:id="@+id/fab_map_report"
-                style="@style/body_2_regular"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/global_margin"
-                android:backgroundTint="@color/color_white"
-                app:strokeColor="@color/color_gray_00"
-                app:strokeWidth="1dp"
-                android:minWidth="80dp"
-                android:minHeight="40dp"
-                android:padding="0dp"
-                android:paddingStart="0dp"
-                android:paddingTop="0dp"
-                android:paddingEnd="0dp"
-                android:text="제보하기"
-                android:textColor="@color/color_primary"
-                app:backgroundTint="@color/color_gray_00"
-                app:elevation="0dp"
-                android:stateListAnimator="@null"
-                app:layout_constraintBottom_toBottomOf="@id/fab_current_location"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="@id/fab_current_location"
-                app:shapeAppearanceOverlay="@style/FloatingButtonShapeAppearanceOverlay" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
+                <com.google.android.material.floatingactionbutton.FloatingActionButton
+                    android:id="@+id/fab_current_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/global_margin"
+                    android:backgroundTint="@color/color_white"
+                    android:minWidth="40dp"
+                    android:minHeight="40dp"
+                    android:padding="0dp"
+                    android:paddingStart="0dp"
+                    android:paddingTop="0dp"
+                    android:paddingEnd="0dp"
+                    app:rippleColor="@color/color_transparent"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/ic_btn_location"
+                    app:backgroundTint="@color/color_gray_00"
+                    app:borderWidth="0.1dp"
+                    app:elevation="0dp"
+                    app:fabCustomSize="40dp"
+                    app:fabSize="normal"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent" />
 
-        <include
-            android:id="@+id/included_bottom_sheet"
-            layout="@layout/bottom_sheet_vegan_map" />
+                <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                    android:id="@+id/fab_map_report"
+                    style="@style/body_2_regular"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/global_margin"
+                    android:backgroundTint="@color/color_white"
+                    android:minWidth="80dp"
+                    android:minHeight="40dp"
+                    android:padding="0dp"
+                    android:paddingStart="0dp"
+                    app:rippleColor="@color/color_transparent"
+                    android:paddingTop="0dp"
+                    android:paddingEnd="0dp"
+                    android:stateListAnimator="@null"
+                    android:text="@string/btn_report"
+                    android:textColor="@color/color_primary"
+                    app:backgroundTint="@color/color_gray_00"
+                    app:elevation="0dp"
+                    app:layout_constraintBottom_toBottomOf="@id/fab_current_location"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/fab_current_location"
+                    app:shapeAppearanceOverlay="@style/FloatingButtonShapeAppearanceOverlay"
+                    app:strokeColor="@color/color_gray_00"
+                    app:strokeWidth="1dp" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <include
+                android:id="@+id/included_bottom_sheet"
+                layout="@layout/bottom_sheet_vegan_map" />
 
 
-    </androidx.coordinatorlayout.widget.CoordinatorLayout>
+        </androidx.coordinatorlayout.widget.CoordinatorLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

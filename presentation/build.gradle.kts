@@ -23,7 +23,7 @@ val kakaoApiKeyTest: String = localProperties.getProperty("KAKAO_API_KEY_TEST") 
 
 
 android {
-    namespace = "com.example.presentation"
+    namespace = "com.beginvegan.presentation"
     compileSdk = DefaultConfig.COMPILE_SDK_VERSION
 
 

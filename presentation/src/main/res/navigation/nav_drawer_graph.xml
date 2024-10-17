@@ -6,6 +6,6 @@
 
     <fragment
         android:id="@+id/notificationDrawerFragment"
-        android:name="com.example.presentation.view.notification.view.NotificationDrawerFragment"
+        android:name="com.beginvegan.presentation.view.notification.view.NotificationDrawerFragment"
         android:label="NotificationDrawerFragment" />
 </navigation>

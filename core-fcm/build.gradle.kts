@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.core_fcm"
+    namespace = "com.beginvegan.core_fcm"
     compileSdk = DefaultConfig.COMPILE_SDK_VERSION
 
     defaultConfig {

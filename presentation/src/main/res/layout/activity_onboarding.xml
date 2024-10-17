@@ -7,7 +7,7 @@
 
         <variable
             name="vm"
-            type="com.example.presentation.view.login.viewModel.OnboardingViewModel" />
+            type="com.beginvegan.presentation.view.login.viewModel.OnboardingViewModel" />
     </data>
 
     <ScrollView

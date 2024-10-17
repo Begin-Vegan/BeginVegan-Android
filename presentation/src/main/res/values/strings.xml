@@ -255,8 +255,7 @@
 
     <string name="placeholder_map_report_edit_restaurant">해당 식당에 대해 수정이 필요한 정보를 자유롭게 입력해주세요.</string>
     <string name="placeholder_map_report_review_etc">기타 신고 사유를 입력해 주세요.</string>
-    <string name="placeholder_map_write_review">자유롭게 리뷰를 작성해 주세요. (필수)\n
-        올바른 리뷰 문화를 위해 리뷰를 함께 보는 비거너들과 식당 사장님들께 상처가 되는 욕설 등의 표현은 사용하지 말아주세요.</string>
+    <string name="placeholder_map_write_review">자유롭게 리뷰를 작성해 주세요. (필수)\n\n올바른 리뷰 문화를 위해 리뷰를 함께 보는 비거너들과 식당 사장님들께 상처가 되는 욕설 등의 표현은 사용하지 말아주세요.</string>
 
     <!-- Dialog -->
     <string name="dialog_select_img_title">사진 선택</string>
@@ -285,9 +284,10 @@
     <string name="dialog_map_edit_restaurant_subtitle">식당 정보 수정</string>
 
     <string name="dialog_map_report_review_title">리뷰 신고하기</string>
+    <string name="dialog_map_report_review_btn">신고하기</string>
     <string name="dialog_map_report_review_subtitle">신고 사유 선택</string>
     <string name="dialog_map_report_review_spam">스팸 홍보/도배</string>
-    <string name="dialog_map_report_review_improper_img">부적절한 단어, 이미지 포함</string>
+    <string name="dialog_map_report_review_improper_img">관련없는 단어, 이미지 포함</string>
     <string name="dialog_map_report_review_expression">불쾌한 표현 (욕설, 차별적 표현 등)</string>
     <string name="dialog_map_report_review_etc">기타</string>
 
